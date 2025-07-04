@@ -206,7 +206,6 @@ class Brakeman::BaseProcessor < Brakeman::SexpProcessor
     result = Sexp.new(:render, render_type, value, rest)
     result.line(exp.line)
 
-    puts "Made a render: #{result.inspect} - #{@current_template&.name}"
     result
   end
 
