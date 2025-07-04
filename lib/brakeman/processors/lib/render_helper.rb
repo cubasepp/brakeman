@@ -70,10 +70,10 @@ module Brakeman::RenderHelper
     target = action.target
     method = action.method
 
-    if SINGLE_RECORD.include? method
-      klass = get_class_target(action) || Brakeman::Tracker::UNKNOWN_MODEL
-      name = Sexp.new(:lit, klass.downcase)
+    klass = get_class_target(action) || Brakeman::Tracker::UNKNOWN_MODEL
+    name = Sexp.new(:lit, klass.downcase)
 
+    if SINGLE_RECORD.include? method
       # Set a local variable with name based on class of model
       # and value of the value passed to render
       local_key = Sexp.new(:lit, :locals)
@@ -81,7 +81,12 @@ module Brakeman::RenderHelper
       hash_insert(locals, name, action)
       hash_insert(args, local_key, locals)
 
-      Brakeman.debug "Do partial? #{name.inspect} #{args.inspect}"
+      process_partial name, args, action.line
+    elsif COLLECTION.include? method
+      collection_key = Sexp.new(:lit, :collection)
+      collection = hash_access(args, collection_key) || Sexp.new(:hash)
+      hash_insert(collection, name, action)
+      hash_insert(args, collection_key, collection)
 
       process_partial name, args, action.line
     end
