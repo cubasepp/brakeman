@@ -205,6 +205,8 @@ class Brakeman::BaseProcessor < Brakeman::SexpProcessor
     rest = process rest
     result = Sexp.new(:render, render_type, value, rest)
     result.line(exp.line)
+
+    puts "Made a render: #{result.inspect} - #{@current_template&.name}"
     result
   end
 
@@ -240,6 +242,7 @@ class Brakeman::BaseProcessor < Brakeman::SexpProcessor
     elsif first_arg.nil?
       type = :default
     elsif not hash? first_arg
+      # Maybe do partial if in view?
       type = :action
       value = first_arg
     end
